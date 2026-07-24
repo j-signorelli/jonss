@@ -35,7 +35,7 @@ STYLE_OPTIONS="--suffix=none \
                --break-after-logical"
 
 
-FILES="$(find jonss/ -type f -name "*.cpp" -or -name "*.hpp")"
+FILES="$(find jonss/ apps/ -type f -name "*.cpp" -or -name "*.hpp")"
 
 STYLE_COMMAND="astyle ${STYLE_OPTIONS} ${FILES}"
 

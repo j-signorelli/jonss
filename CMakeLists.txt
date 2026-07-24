@@ -4,6 +4,9 @@ project(jonss LANGUAGES CXX CUDA VERSION 2.0.0)
 
 option(JONSS_BUILD_JOE_TESTS
    "Build the `joe_tests` namespace. Requires Jabber." ON)
+if (JONSS_BUILD_JOE_TESTS)
+   add_compile_definitions(JONSS_JOE_TESTS)
+endif()
 
 
 # Get MFEM
@@ -20,7 +23,6 @@ target_sources(jonss
       FILE_SET public_headers TYPE HEADERS
       FILES
          ${JONSS_HEADERS})
-
 
 add_subdirectory(apps)
 

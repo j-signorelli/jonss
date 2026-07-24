@@ -16,7 +16,6 @@ endfunction()
 
 if (JONSS_BUILD_JOE_TESTS)
    add_subdirectory(joe_tests)
-   add_compile_definitions(JONSS_JOE_TESTS)
 endif()
 
 set(main_header jonss.hpp)

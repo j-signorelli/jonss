@@ -7,11 +7,11 @@ namespace jonss
 namespace joe_tests
 {
 
-Mesh CreateTestDomain(const double k,
-                      const int num_waves,
-                      const int n_elems_per_wave,
-                      const int n_elems_y,
-                      const double grid_ar)
+Mesh Create2DWaveDomain(const double k,
+                        const int num_waves,
+                        const int n_elems_per_wave,
+                        const int n_elems_y,
+                        const double grid_ar)
 {
    const double length_x = 2*M_PI*num_waves/k;
    const double x_spacing = length_x/n_elems_per_wave;

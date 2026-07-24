@@ -1,3 +1,3 @@
 #ifdef JONSS_JOE_TESTS
-#include "joe_tests/joe_tests.hpp"
+#include "joe_tests/utils.hpp"
 #endif // JONSS_JOE_TESTS
