@@ -2,23 +2,27 @@ cmake_minimum_required(VERSION 3.15)
 
 project(jonss LANGUAGES CXX CUDA VERSION 2.0.0)
 
+option(JONSS_BUILD_JOE_TESTS
+   "Build the `joe_tests` namespace. Requires Jabber." ON)
+
+
 # Get MFEM
 find_package(MFEM 4.9 REQUIRED CONFIG) 
 
-#add_library(jonss)
-#target_compile_features(jonss PUBLIC cxx_std_20) # Require C++20
-#add_subdirectory(jonss)
-# target_sources(jonss
-#    PRIVATE 
-#       ${JONSS_SOURCES}
-#    PUBLIC
-#       FILE_SET public_headers TYPE HEADERS
-#       FILES
-#          ${JONSS_HEADERS})
+add_library(jonss)
+target_link_libraries(jonss PUBLIC mfem)
+target_compile_features(jonss PUBLIC cxx_std_20) # Require + use C++20
+add_subdirectory(jonss)
+target_sources(jonss
+   PRIVATE 
+      ${JONSS_SOURCES}
+   PUBLIC
+      FILE_SET public_headers TYPE HEADERS
+      FILES
+         ${JONSS_HEADERS})
 
 
-add_executable(run_jonss run_jonss.cpp)
-target_link_libraries(run_jonss PRIVATE mfem)
+add_subdirectory(apps)
 
 # Install jonss
 include(GNUInstallDirs)
@@ -26,7 +30,7 @@ include(GNUInstallDirs)
 message(STATUS "Install directory: ${CMAKE_INSTALL_PREFIX}")
 
 # From: https://stackoverflow.com/questions/17511496/how-to-create-a-shared-library-with-cmake
-install(TARGETS run_jonss
+install(TARGETS jonss
    EXPORT jonssTargets
    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
