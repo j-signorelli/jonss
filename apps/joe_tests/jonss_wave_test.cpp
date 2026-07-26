@@ -6,12 +6,11 @@
 #include <mfem/mfem.hpp>
 
 using namespace mfem;
-using namespace jonss::joe_tests;
 
 struct TestContext
 {
    /// Freestream x-velocity.
-   double u_infty =943.659260927367;
+   double u_infty = 943.659260927367;
 
    /// Freestream density.
    double rho_infty = 0.031762238707;
@@ -26,7 +25,7 @@ struct TestContext
    int num_waves = 1;
 
    /// Number of elements / wave in x-direction
-   int num_elems_per_wave = 10;
+   int num_elems_per_wave = 60;
 
    /// Pressure amplitude of single acoustic wave.
    double amp = 10;
@@ -42,6 +41,9 @@ struct TestContext
    
    /// Enable/disable visualization w/ GLVis.
    bool visualization = true;
+
+   /// Finite element order to use.
+   int order = 5;
 
 } ctx;
 
@@ -76,7 +78,9 @@ int main(int argc, char* argv[])
                   "Acoustic wave speed flag.");
    args.AddOption(&ctx.visualization, "-vis", "--visualization",
                   "-no-vis", "--no-visualization",
-                  "Enable or disable GLVis visualization.");                  
+                  "Enable or disable GLVis visualization.");
+   args.AddOption(&ctx.order, "-o", "--order",
+                  "Order (degree) of the finite elements.");           
    args.Parse();
    if (!args.Good())
    {
@@ -88,8 +92,31 @@ int main(int argc, char* argv[])
       args.PrintOptions(std::cout);
    }
    
-   const double k = jabber::ComputeWavenumber()
-   Mesh mesh = Create2DWaveDomain()
+   jabber::Wave wave;
+   wave.amplitude = ctx.amp;
+   wave.frequency = ctx.freq;
+   wave.phase = ctx.phase;
+   wave.speed = ctx.slow ? 'S' : 'F';
+   wave.k_hat = std::vector<double>({1.0,0.0});
+
+   const double c_infty = std::sqrt(ctx.gamma*ctx.p_infty/ctx.rho_infty);
+   const std::vector<double> u_infty_vector({ctx.u_infty, 0.0});
+   const double k = jabber::ComputeWavenumber(u_infty_vector, c_infty, wave);
+
+   // Create the mesh
+   Mesh mesh = jonss::joe_tests::Create2DWaveDomain(k, ctx.num_waves, 
+                                                      ctx.num_elems_per_wave);
+   // Visualize the mesh
+   if (ctx.visualization)
+   {
+      socketstream sock("localhost", 19916);
+
+      const int Wx = 500, Wy = 500;
+      const char *keys = "lARjc//";
+
+      sock << "mesh\n";
+      mesh.Print(sock);
+   }
 
    return 0;
 }
