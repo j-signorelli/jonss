@@ -13,13 +13,15 @@ function(append_relative_paths NAMES)
    set(${NAMES} ${tmp_names} PARENT_SCOPE)
 endfunction()
 
+set(JONSS_SOURCES
+      numerical_flux.cpp)
 
-if (JONSS_BUILD_JOE_TESTS)
-   add_subdirectory(joe_tests)
-endif()
+set(JONSS_HEADERS
+      numerical_flux.hpp
+      jonss.hpp)
 
-set(main_header jonss.hpp)
-append_relative_paths(main_header)
+append_relative_paths(JONSS_SOURCES)
+append_relative_paths(JONSS_HEADERS)
 
 set(JONSS_SOURCES ${JONSS_SOURCES} PARENT_SCOPE)
-set(JONSS_HEADERS ${JONSS_HEADERS} ${main_header} PARENT_SCOPE)
+set(JONSS_HEADERS ${JONSS_HEADERS} PARENT_SCOPE)

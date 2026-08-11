@@ -5,6 +5,8 @@
 #include <jabber/jabber.hpp>
 #include <mfem/mfem.hpp>
 
+#include "utils.hpp"
+
 using namespace mfem;
 
 struct TestContext
@@ -104,8 +106,8 @@ int main(int argc, char* argv[])
    const double k = jabber::ComputeWavenumber(u_infty_vector, c_infty, wave);
 
    // Create the mesh
-   Mesh mesh = jonss::joe_tests::Create2DWaveDomain(k, ctx.num_waves, 
-                                                      ctx.num_elems_per_wave);
+   Mesh mesh = joe_tests::Create2DWaveDomain(k, ctx.num_waves, 
+                                             ctx.num_elems_per_wave);
    // Visualize the mesh
    if (ctx.visualization)
    {

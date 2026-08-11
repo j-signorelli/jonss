@@ -1,7 +1,6 @@
 #include <mfem/mfem.hpp>
 
-namespace jonss
-{
+
 namespace joe_tests
 {
 
@@ -9,9 +8,6 @@ namespace joe_tests
  * @brief Generate a 2D rectangular grid with x-length set to ensure
  * exactly \p num_waves in the domain for a single acoustic wave in
  * a freestream, both in the x-direction.
- * 
- * @warning The grid order is kept at 1. For isoparametric elements,
- * set using mfem::Mesh::SetCurvature().
  * 
  * @param k                  Acoustic wave wavenumber.
  * @param num_waves          Number of acoustic waves to include.
@@ -28,5 +24,3 @@ mfem::Mesh Create2DWaveDomain(const double k,
                               const double grid_ar=6);
 
 } // namespace joe_tests
-
-} // namespace jonss

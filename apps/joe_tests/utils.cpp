@@ -2,8 +2,7 @@
 
 using namespace mfem;
 
-namespace jonss
-{
+
 namespace joe_tests
 {
 
@@ -94,4 +93,3 @@ Mesh Create2DWaveDomain(const double k,
 
 
 } // namespace joe_tests
-} // namespace jonss

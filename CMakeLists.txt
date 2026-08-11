@@ -3,11 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 project(jonss LANGUAGES CXX CUDA VERSION 2.0.0)
 
 option(JONSS_BUILD_JOE_TESTS
-   "Build the `joe_tests` namespace. Requires Jabber." ON)
-if (JONSS_BUILD_JOE_TESTS)
-   add_compile_definitions(JONSS_JOE_TESTS)
-endif()
-
+   "Build the joe_tests. Requires Jabber." ON)
 
 # Get MFEM
 find_package(MFEM 4.9 REQUIRED CONFIG) 
