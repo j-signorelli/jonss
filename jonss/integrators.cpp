@@ -2,7 +2,7 @@
 
 using namespace mfem;
 
-namespace jonns
+namespace jonss
 {
 
 void SplitFormVolumeFluxIntegrator::AssembleElementVector(
@@ -14,7 +14,8 @@ void SplitFormVolumeFluxIntegrator::AssembleElementVector(
    MFEM_ASSERT(dynamic_cast<const TensorBasisElement*>(&fe) != nullptr,
                "Only tensor product elements are currently supported.");
    
-   el.
+   el.GetDofToQuad
+   
 }
 
 } // namespace jonss
