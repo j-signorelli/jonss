@@ -199,36 +199,29 @@ struct NumericalFlux<FluxOption::LocalLaxFriedrichs,TModel>
    {
       using enum ModelOption;
 
-      if constexpr (TModel == AirCPG)
+      mfem::real_t F_1[TDim][kNumEq<TDim,TModel>];
+      mfem::real_t F_2[TDim][kNumEq<TDim,TModel>];
+      ComputeInviscidFluxes<TDim,TModel>(state1, F_1);
+      ComputeInviscidFluxes<TDim,TModel>(state2, F_2);
+
+      for (int d = 0; d < TDim; d++)
       {
-         mfem::real_t F_1[TDim][TDim+2];
-         mfem::real_t F_2[TDim][TDim+2];
-         ComputeInviscidFluxes(state1, F_1);
-         ComputeInviscidFluxes(state2, F_2);
-
-         for (int d = 0; d < TDim; d++)
+         for (int c = 0; c < kNumEq<TDim,TModel>; c++)
          {
-            for (int c = 0; c < TDim+2; c++)
-            {
-               fluxes[d][c] = 0.5*(F_1[d][c] + F_2[d][c]);
+            fluxes[d][c] = 0.5*(F_1[d][c] + F_2[d][c]);
 
-               if constexpr (TStab)
-               {
-               
-               }
+            if constexpr (TStab)
+            {
+               // 
             }
          }
       }
-      else
-      {
-         static_assert(TDim != TDim, "Unimplemented model.");
-      }
+   }
    }
 };
 
 /**
  * @brief Chandrashekar numerical flux specialization.
- * 
  */
 template<ModelOption TModel>
 struct NumericalFlux<FluxOption::Chandrashekar,TModel>
@@ -242,14 +235,7 @@ struct NumericalFlux<FluxOption::Chandrashekar,TModel>
    {
       using enum ModelOption;
 
-      if constexpr (TModel == AirCPG)
-      {
-         // TODO.
-      }
-      else
-      {
-         static_assert(TDim != TDim, "Unimplemented model.");
-      }
+      
    }
 };
 
