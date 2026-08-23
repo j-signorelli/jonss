@@ -14,8 +14,9 @@ void SplitFormVolumeFluxIntegrator::AssembleElementVector(
    MFEM_ASSERT(dynamic_cast<const TensorBasisElement*>(&fe) != nullptr,
                "Only tensor product elements are currently supported.");
    
-   el.GetDofToQuad
+  //const DofToQuad &d2q = el.GetDofToQuad();
    
+  // TODO: What is the ordering of elfun when vdim > 1???
 }
 
 } // namespace jonss

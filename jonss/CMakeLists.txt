@@ -14,11 +14,10 @@ function(append_relative_paths NAMES)
 endfunction()
 
 set(JONSS_SOURCES
-      numerical_flux.cpp
       integrators.cpp)
 
 set(JONSS_HEADERS
-      numerical_flux.hpp
+      fluxes.hpp
       integrators.hpp
       jonss.hpp)
 
