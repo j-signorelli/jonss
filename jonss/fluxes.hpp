@@ -26,7 +26,7 @@ enum class ModelOption : std::uint8_t
 };
 
 /**
- * @brief Compile-time variable for getting the number of equations
+ * @brief Compile-time variable for the number of equations
  * for a given ModelOption.
  * 
  * @tparam TDim    Spatial dimension.
@@ -113,92 +113,29 @@ enum class FluxOption : std::uint8_t
 };
 
 /**
- * @brief Generic, "compile-time-abstract" struct representing a numerical flux.
+ * @brief Compute the numerical fluxes.
  * 
- * 
- * @details This should be AT LEAST partially specialized for every FluxOption!
- * 
- * A struct is used to support member variables in derived types, if one
- * wanted to have runtime customization of a numerical flux scheme. Additionally, partial
- * specialization is supported, such that an explicit specialization is not needed for
- * every single combination of \p TFlux and \p TModel.
- * 
+ * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
+ *                   loops.
  * @tparam TFlux     Numerical flux.
+ * @tparam TStab     If true, include stabilization (for face fluxes).
+ *                   If false, do not include stabilization (for volume fluxes).
  * @tparam TModel    Fluid model.
- */
-template<FluxOption TFlux, ModelOption TModel>
-struct NumericalFlux
-{
-   /**
-    * @brief Compute the numerical flux.
-    * 
-    * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
-    *                   loops.
-    * @tparam TStab     If true, enable stabilization term. \p nor must be 
-    *                   set! If false, \p nor is not used. In other words, if
-    *                   true, compute face fluxes in DGSEM. If false, compute 
-    *                   volume fluxes in DGSEM.
-    * @param state1     First state.
-    * @param state2     Second state.
-    * @param nor        Pointer to normal vector - only used if \p TStab is
-    *                   true.
-    * @return fluxes    Computed numerical fluxes.
-    */
-   template<int TDim, bool TStab>
-   MFEM_HOST_DEVICE void ComputeFlux(
-         const mfem::real_t (&state1)[kNumEq<TDim,TModel>],
-         const mfem::real_t (&state2)[kNumEq<TDim,TModel>],
-         const mfem::real_t *nor[TDim],
-         mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>])
-   {
-      static_assert(TDim != TDim, "Unimplemented flux.");
-   }
-};
-
-/**
- * @brief THE function for computing volume fluxes.
  * 
+ * @param state1     First state.
+ * @param state2     Second state.
+ * @return fluxes    Computed numerical fluxes.
  */
-template<int TDim, FluxOption TFlux, ModelOption TModel>
-void MFEM_HOST_DEVICE ComputeVolumeFlux(
-         const NumericalFlux<TFlux,TModel> &numerical_flux,
-         const mfem::real_t (&state1)[kNumEq<TDim,TModel>],
-         const mfem::real_t (&state2)[kNumEq<TDim,TModel>],
-         mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>])
+template<int TDim, bool TStab, FluxOption TFlux, ModelOption TModel>
+MFEM_HOST_DEVICE void ComputeNumericalFluxes(
+      const mfem::real_t (&state1)[kNumEq<TDim,TModel>],
+      const mfem::real_t (&state2)[kNumEq<TDim,TModel>],
+      mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>])
 {
-   numerical_flux.ComputeFlux<false>(state1, state2, nullptr, fluxes);
-}
+   using enum FluxOption;
 
-/**
- * @brief THE function for computing face fluxes.
- */
-template<int TDim, FluxOption TFlux, ModelOption TModel>
-void MFEM_HOST_DEVICE ComputeFaceFlux(
-         const NumericalFlux<TFlux,TModel> &numerical_flux,
-         const mfem::real_t (&state1)[kNumEq<TDim,TModel>],
-         const mfem::real_t (&state2)[kNumEq<TDim,TModel>],
-         const mfem::real_t (&nor)[TDim],
-         mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>])
-{
-   numerical_flux.ComputeFlux<true>(state1, state2, &nor, fluxes);
-}
-
-/**
- * @brief Local Lax-Friedrichs numerical flux specialization.
- * 
- */
-template<ModelOption TModel>
-struct NumericalFlux<FluxOption::LocalLaxFriedrichs,TModel>
-{
-   template<int TDim, bool TStab>
-   MFEM_HOST_DEVICE void ComputeFlux(
-         const mfem::real_t (&state1)[kNumEq<TDim,TModel>],
-         const mfem::real_t (&state2)[kNumEq<TDim,TModel>],
-         const mfem::real_t *nor[TDim],
-         mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>])
-   {
-      using enum ModelOption;
-
+   if constexpr (TFlux == LocalLaxFriedrichs)
+   { 
       mfem::real_t F_1[TDim][kNumEq<TDim,TModel>];
       mfem::real_t F_2[TDim][kNumEq<TDim,TModel>];
       ComputeInviscidFluxes<TDim,TModel>(state1, F_1);
@@ -209,36 +146,27 @@ struct NumericalFlux<FluxOption::LocalLaxFriedrichs,TModel>
          for (int c = 0; c < kNumEq<TDim,TModel>; c++)
          {
             fluxes[d][c] = 0.5*(F_1[d][c] + F_2[d][c]);
-
             if constexpr (TStab)
             {
-               // 
+               // Compute lambda_max on-the-fly
+               mfem::real_t lambda_max;
+               // TODO: Figure out exactly what these should be...
+               // I think they are just the eigenvalues in the I do like CFD.
+               // But Theseus confusing me.
+               fluxes[d][c] -= 0.5*lambda_max*(state2[c] - state1[c]);
             }
          }
       }
    }
-   }
-};
-
-/**
- * @brief Chandrashekar numerical flux specialization.
- */
-template<ModelOption TModel>
-struct NumericalFlux<FluxOption::Chandrashekar,TModel>
-{
-   template<int TDim, bool TStab>
-   MFEM_HOST_DEVICE void ComputeFlux(
-         const mfem::real_t (&state1)[kNumEq<TDim,TModel>],
-         const mfem::real_t (&state2)[kNumEq<TDim,TModel>],
-         const mfem::real_t *nor[TDim],
-         mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>])
+   else if constexpr (TFlux == Chandrashekar)
    {
-      using enum ModelOption;
 
-      
    }
-};
-
+   else
+   {
+      static_assert(TDim != TDim, "Unimplemented numerical flux.");
+   }
+}
 
 } // namespace jonss
 

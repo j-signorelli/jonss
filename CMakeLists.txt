@@ -5,6 +5,9 @@ project(jonss LANGUAGES CXX CUDA VERSION 2.0.0)
 option(JONSS_BUILD_JOE_TESTS
    "Build the joe_tests. Requires Jabber." ON)
 
+option(JONSS_BUILD_TESTS
+   "Build the unit tests." ON)
+
 # Get MFEM
 find_package(MFEM 4.9 REQUIRED CONFIG) 
 
@@ -21,6 +24,10 @@ target_sources(jonss
          ${JONSS_HEADERS})
 
 add_subdirectory(apps)
+
+# if (JONSS_BUILD_TESTS)
+#    add_subdirectory(tests)
+# endif()
 
 # Install jonss
 include(GNUInstallDirs)
