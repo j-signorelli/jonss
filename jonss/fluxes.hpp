@@ -1,6 +1,8 @@
 #ifndef JONSS_FLUXES
 #define JONSS_FLUXES
 
+#include "model.hpp"
+
 #include <cstdint>
 
 #include <mfem/mfem.hpp>
@@ -8,46 +10,6 @@
 namespace jonss
 {
 
-/**
- * @brief Modeling options.
- * 
- * @details These are used to assist in determining the 
- * number of equations/conserved variables and models
- * at compile-time to prevent any vtable lookups.
- * 
- */
-enum class ModelOption : std::uint8_t
-{
-   /// Air, assuming calorically-perfect gas.
-   AirCPG,
-
-   /// Number of ModelOption enumerators.
-   Size
-};
-
-/**
- * @brief Compile-time variable for the number of equations
- * for a given ModelOption.
- * 
- * @tparam TDim    Spatial dimension.
- * @tparam TModel  Fluid model.
- */
-template<int TDim, ModelOption TModel>
-constexpr static int kNumEq = 
-[]()
-{
-   using enum ModelOption;
-
-   if constexpr (TModel == AirCPG)
-   {
-      // Density, Momentum (TDim), and Energy
-      return TDim + 2;
-   }
-   else
-   {
-      static_assert(TDim != TDim, "Unimplemented model.");
-   }
-}();
 
 /**
  * @brief Function for computing the inviscid fluxes.
@@ -61,27 +23,19 @@ constexpr static int kNumEq =
  * @tparam TModel    Fluid model.
  * 
  * @param state      State vector.
+ * @param prim       Primitives.
  * @param fluxes     Flux vectors.
  */
 template<int TDim, ModelOption TModel>
 MFEM_HOST_DEVICE inline
 void ComputeInviscidFluxes(const mfem::real_t (&state)[kNumEq<TDim,TModel>],
+                           const Primitives<TDim,TModel> &prim,
                            mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>]) 
 {
    using enum ModelOption;
 
    if constexpr (TModel == AirCPG)
    {
-      mfem::real_t vel[TDim];
-      mfem::real_t vel_sq = 0.0;
-      for (int d = 0; d < TDim; d++)
-      {
-         vel[d] = state[1+d]/state[0];
-         vel_sq += vel[d]*vel[d];
-      }
-      const mfem::real_t p = (1.4-1.0)*(state[TDim+1]-state[0]*vel_sq/2.0);
-      const mfem::real_t H = state[TDim+1]/state[0] + p/state[0];
-
       for (int di = 0; di < TDim; di++)
       {
          // Set density fluxes
@@ -90,12 +44,12 @@ void ComputeInviscidFluxes(const mfem::real_t (&state)[kNumEq<TDim,TModel>],
          // Set momentum fluxes
          for (int dj = 0; dj < TDim; dj++)
          {
-            fluxes[di][dj+1] = state[1+di]*vel[dj];
+            fluxes[di][dj+1] = state[1+di]*prim.vel[dj];
          }
-         fluxes[di][di+1] += p;
+         fluxes[di][di+1] += prim.p;
 
          // Set energy fluxes
-         fluxes[di][TDim+1] = state[1+di]*H;
+         fluxes[di][TDim+1] = state[1+di]*prim.H;
       }
    }
    else
@@ -111,6 +65,9 @@ enum class FluxOption : std::uint8_t
    Chandrashekar,
    Size
 };
+
+
+template<int
 
 /**
  * @brief Compute the numerical fluxes.
@@ -138,6 +95,8 @@ MFEM_HOST_DEVICE void ComputeNumericalFluxes(
    { 
       mfem::real_t F_1[TDim][kNumEq<TDim,TModel>];
       mfem::real_t F_2[TDim][kNumEq<TDim,TModel>];
+
+      //  TODO: Will need to think about viscous soon. Hurray.
       ComputeInviscidFluxes<TDim,TModel>(state1, F_1);
       ComputeInviscidFluxes<TDim,TModel>(state2, F_2);
 
