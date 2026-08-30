@@ -3,18 +3,29 @@
 
 #include <cstdint>
 
-#include <mfem/mfem.hpp>
-
 namespace jonss
 {
 
-/// Fluid modeling options.
+/// Fluid model options.
 enum class FluidOption : std::uint8_t
 {
-   /// Standard, CPG air.
-   AirCPG,
+   /// Inviscid, calorically perfect gas.
+   EulerCPG,
 
-   /// Number of ModelOption enumerators.
+   /// Viscous, calorically perfect gas.
+   NavierStokesCPG,
+
+   /// Number of FluidOption enumerators.
+   Size
+};
+
+/// Viscosity model options.
+enum class ViscosityOption : std::uint8_t
+{
+   /// Sutherland's law for viscosity.
+   Sutherland,
+
+   /// Number of ViscosityOption enumerators.
    Size
 };
 

@@ -2,7 +2,7 @@
 #define JONSS_PRIMITIVES
 
 #include "options.hpp"
-
+#include "constants.hpp"
 
 namespace jonss
 {
@@ -16,10 +16,10 @@ namespace jonss
  * in smem.  This should be explicitly specialized for each 
  * \ref FluidOption.
  * 
- * @tparam TModel    Fluid model.
+ * @tparam TFluid    Fluid model.
  * @tparam TDim      Spatial dimension.
  */
-template<FluidOption TModel, int TDim>
+template<FluidOption TFluid, int TDim>
 struct Primitives
 {
    MFEM_HOST_DEVICE Primitives() = delete;
@@ -31,11 +31,8 @@ struct Primitives
  * @tparam TDim      Spatial dimension.
  */
 template<int TDim>
-struct Primitives<FluidOption::AirCPG, TDim>
+struct Primitives<FluidOption::EulerCPG, TDim>
 {
-   /// Specific heat ratio.
-   static constexpr double kGamma = 1.4;
-
    /// Velocity.
    mfem::real_t vel[TDim];
 
@@ -52,21 +49,22 @@ struct Primitives<FluidOption::AirCPG, TDim>
 /**
  * @brief Function for initializing a Primitives struct.
  * 
- * @tparam TModel    Fluid model.
+ * @tparam TFluid    Fluid model.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * 
  * @param[in] state     State struct.
  * @param[out] prim     Primitives struct.
  */
-template<FluidOption TModel, int TDim>
+template<FluidOption TFluid, int TDim>
 MFEM_HOST_DEVICE inline
-void ComputePrimitives(const State<TModel,TDim> &state,
-                       Primitives<TModel,TDim> &prim)
+void ComputePrimitives(const FluidConstants<TFluid> &constants,
+                       const State<TFluid,TDim> &state,
+                       Primitives<TFluid,TDim> &prim)
 {
    using enum FluidOption;
 
-   if constexpr (TModel == AirCPG)
+   if constexpr (TFluid == EulerCPG)
    {
       // See "I do like CFD" for details.
 
@@ -76,7 +74,7 @@ void ComputePrimitives(const State<TModel,TDim> &state,
          prim.vel[d] = state.rhoV[d]/state.rho;
          prim.vel_sq += prim.vel[d]*prim.vel[d];
       }
-      prim.p = (prim.kGamma-1.0)*(state.rhoE-0.5*state.rho*prim.vel_sq);
+      prim.p = (constants.gamma-1.0)*(state.rhoE-0.5*state.rho*prim.vel_sq);
       prim.H = (state.rhoE + prim.p)/state.rho;
    }
    else

@@ -3,6 +3,8 @@
 
 #include "options.hpp"
 
+#include <mfem/mfem.hpp>
+
 namespace jonss
 {
 
@@ -13,10 +15,10 @@ namespace jonss
  * This may be explicitly specialized to contain more for a specific 
  * \ref FluidOption, such as for species transport.
  * 
- * @tparam TModel    Fluid model.
+ * @tparam TFluid    Fluid model.
  * @tparam TDim      Spatial dimension.
  */
-template<FluidOption TModel, int TDim>
+template<FluidOption TFluid, int TDim>
 struct State
 {
    /// Density.

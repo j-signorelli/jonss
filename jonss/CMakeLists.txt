@@ -18,6 +18,7 @@ set(JONSS_SOURCES
 
 set(JONSS_HEADERS
       options.hpp
+      constants.hpp
       state.hpp
       primitives.hpp
       fluxes.hpp

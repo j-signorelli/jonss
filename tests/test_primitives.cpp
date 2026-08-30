@@ -9,13 +9,16 @@ using namespace Catch::Matchers;
 
 TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
                         ((FluidOption TModel), TModel),
-                        FluidOption::AirCPG)
+                        FluidOption::EulerCPG)
 {
    using enum FluidOption;
-   if constexpr (TModel == AirCPG)
+   if constexpr (TModel == EulerCPG)
    {
+      // Initialize constants
+      FluidConstants<EulerCPG> constants(1.4);
+
       // Initialize test state
-      State<AirCPG,3> state;
+      State<EulerCPG,3> state;
       state.rho = 0.031762238707;
       state.rhoV[0] = state.rho*471.82963046368343;
       state.rhoV[1] = 0.0;
@@ -23,11 +26,11 @@ TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
       state.rhoE = 0.0; // TODO
 
       // Compute primitives from test state
-      Primitives<AirCPG,3> prim;
-      ComputePrimitives(state,prim);
+      Primitives<EulerCPG,3> prim;
+      ComputePrimitives(constants,state,prim);
 
       // Initialize exact primitives
-      Primitives<AirCPG,3> exact_prim;
+      Primitives<EulerCPG,3> exact_prim;
       exact_prim.p = 568.749414924658;
       exact_prim.vel[0] = 471.82963046368343;
       exact_prim.vel[1] = 0.0;

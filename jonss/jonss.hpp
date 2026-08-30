@@ -1,4 +1,5 @@
 #include "options.hpp"
+#include "constants.hpp"
 #include "state.hpp"
 #include "primitives.hpp"
 #include "fluxes.hpp"

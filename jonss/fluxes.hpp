@@ -15,7 +15,7 @@ namespace jonss
 /**
  * @brief Function for computing the inviscid fluxes.
  * 
- * @tparam TModel    Fluid model.
+ * @tparam TFluid    Fluid model.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * 
@@ -24,15 +24,15 @@ namespace jonss
  * 
  * @param[out] fluxes    Computed fluxes.
  */
-template<FluidOption TModel, int TDim>
+template<FluidOption TFluid, int TDim>
 MFEM_HOST_DEVICE inline
-void ComputeInviscidFluxes(const State<TModel,TDim> &state,
-                           const Primitives<TModel,TDim> &prim,
-                           State<TModel,TDim> (&fluxes)[TDim]) 
+void ComputeInviscidFluxes(const State<TFluid,TDim> &state,
+                           const Primitives<TFluid,TDim> &prim,
+                           State<TFluid,TDim> (&fluxes)[TDim]) 
 {
    using enum FluidOption;
 
-   if constexpr (TModel == AirCPG)
+   if constexpr (TFluid == EulerCPG)
    {
       // See "I do like CFD" for details.
 
@@ -61,7 +61,7 @@ void ComputeInviscidFluxes(const State<TModel,TDim> &state,
 /**
  * @brief Compute the numerical fluxes.
  * 
- * @tparam TModel    Fluid model.
+ * @tparam TFluid    Fluid model.
  * @tparam TFlux     Numerical flux.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
@@ -74,24 +74,25 @@ void ComputeInviscidFluxes(const State<TModel,TDim> &state,
  * 
  * @param[out] fluxes    Computed numerical fluxes.
  */
-template<FluidOption TModel, NumericalFluxOption TFlux, int TDim, bool TStab>
+template<FluidOption TFluid, NumericalFluxOption TFlux, int TDim, bool TStab>
 MFEM_HOST_DEVICE inline
-void ComputeNumericalFluxes(const State<TModel,TDim> &state1, 
-                            const State<TModel,TDim> &state2,
-                            State<TModel,TDim> (&fluxes)[TDim])
+void ComputeNumericalFluxes(const State<TFluid,TDim> &state1, 
+                            const State<TFluid,TDim> &state2,
+                            State<TFluid,TDim> (&fluxes)[TDim])
 {
    using enum NumericalFluxOption;
 
    if constexpr (TFlux == LocalLaxFriedrichs)
    { 
-      State<TModel,TDim> F_1[TDim];
-      State<TModel,TDim> F_2[TDim];
+      State<TFluid,TDim> F_1[TDim];
+      State<TFluid,TDim> F_2[TDim];
 
       //  TODO: Will need to think about viscous soon. Hurray.
-      ComputeInviscidFluxes<TModel,TDim>(state1, F_1);
-      ComputeInviscidFluxes<TModel,TDim>(state2, F_2);
+      ComputeInviscidFluxes<TFluid,TDim>(state1, F_1);
+      ComputeInviscidFluxes<TFluid,TDim>(state2, F_2);
 
-      if constexpr (TModel == FluidOption::AirCPG)
+      if constexpr (TFluid == FluidOption::EulerCPG || 
+                    TFluid == FluidOption::NavierStokesCPG)
       {
          for (int di = 0; di < TDim; di++)
          {

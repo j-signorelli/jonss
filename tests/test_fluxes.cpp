@@ -7,17 +7,18 @@ using namespace jonss;
 
 TEMPLATE_TEST_CASE_SIG("Compute inviscid fluxes" ,"[Fluxes]",
                         ((FluidOption TModel), TModel),
-                        FluidOption::AirCPG)
+                        FluidOption::EulerCPG)
 {
    using enum FluidOption;
-   if constexpr (TModel == AirCPG)
+   if constexpr (TModel == EulerCPG)
    {
       // TODO: Initialize each and verify.
-      State<AirCPG,3> state;
-      Primitives<AirCPG,3> prim;
-      ComputePrimitives(state,prim);    
+      FluidConstants<EulerCPG> constants(1.4);
+      State<EulerCPG,3> state;
+      Primitives<EulerCPG,3> prim;
+      ComputePrimitives(constants,state,prim);    
       
-      State<AirCPG,3> fluxes[3];
+      State<EulerCPG,3> fluxes[3];
       ComputeInviscidFluxes(state,prim,fluxes);
    }
    else
