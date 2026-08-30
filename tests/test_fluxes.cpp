@@ -6,12 +6,12 @@
 using namespace jonss;
 
 TEMPLATE_TEST_CASE_SIG("Compute inviscid fluxes" ,"[Fluxes]",
-                        ((FluidOption TModel), TModel),
+                        ((FluidOption TFluid), TFluid),
                         FluidOption::EulerCPG,
                         FluidOption::NavierStokesCPG)
 {
    using enum FluidOption;
-   if constexpr (TModel == EulerCPG)
+   if constexpr (TFluid == EulerCPG)
    {
       // TODO: Initialize each and verify.
       const FluidConstants<EulerCPG> constants(1.4);

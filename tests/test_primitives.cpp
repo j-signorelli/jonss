@@ -10,12 +10,12 @@ using namespace jonss;
 using namespace Catch::Matchers;
 
 TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
-                        ((FluidOption TModel), TModel),
+                        ((FluidOption TFluid), TFluid),
                         FluidOption::EulerCPG,
                         FluidOption::NavierStokesCPG)
 {
    using enum FluidOption;
-   if constexpr (TModel == EulerCPG)
+   if constexpr (TFluid == EulerCPG)
    {
       // Initialize constants
       const FluidConstants<EulerCPG> constants(1.4);
