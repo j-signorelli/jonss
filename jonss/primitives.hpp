@@ -14,24 +14,24 @@ namespace jonss
  * @details For variables, dependent on the state, that are to be computed 
  * once to avoid expensive re-computations on-the-fly and support storage 
  * in smem.  This should be explicitly specialized for each 
- * \ref FluidModelOption.
+ * \ref FluidOption.
  * 
  * @tparam TModel    Fluid model.
  * @tparam TDim      Spatial dimension.
  */
-template<FluidModelOption TModel, int TDim>
+template<FluidOption TModel, int TDim>
 struct Primitives
 {
    MFEM_HOST_DEVICE Primitives() = delete;
 };
 
 /**
- * @brief Primitives specialization for FluidModelOption::AirCPG.
+ * @brief Primitives specialization for FluidOption::AirCPG.
  * 
  * @tparam TDim      Spatial dimension.
  */
 template<int TDim>
-struct Primitives<FluidModelOption::AirCPG, TDim>
+struct Primitives<FluidOption::AirCPG, TDim>
 {
    /// Specific heat ratio.
    static constexpr double kGamma = 1.4;
@@ -59,12 +59,12 @@ struct Primitives<FluidModelOption::AirCPG, TDim>
  * @param[in] state     State struct.
  * @param[out] prim     Primitives struct.
  */
-template<FluidModelOption TModel, int TDim>
+template<FluidOption TModel, int TDim>
 MFEM_HOST_DEVICE inline
 void ComputePrimitives(const State<TModel,TDim> &state,
                        Primitives<TModel,TDim> &prim)
 {
-   using enum FluidModelOption;
+   using enum FluidOption;
 
    if constexpr (TModel == AirCPG)
    {

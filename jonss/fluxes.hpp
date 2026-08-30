@@ -24,13 +24,13 @@ namespace jonss
  * 
  * @param[out] fluxes    Computed fluxes.
  */
-template<FluidModelOption TModel, int TDim>
+template<FluidOption TModel, int TDim>
 MFEM_HOST_DEVICE inline
 void ComputeInviscidFluxes(const State<TModel,TDim> &state,
                            const Primitives<TModel,TDim> &prim,
                            State<TModel,TDim> (&fluxes)[TDim]) 
 {
-   using enum FluidModelOption;
+   using enum FluidOption;
 
    if constexpr (TModel == AirCPG)
    {
@@ -66,15 +66,15 @@ void ComputeInviscidFluxes(const State<TModel,TDim> &state,
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * @tparam TStab     If true, include stabilization (for face fluxes).
- *                   If false, do not include stabilization (for volume fluxes).
+ *                   If false, do not include stabilization (for volume
+ *                   fluxes).
  * 
  * @param[in] state1     First state.
  * @param[in] state2     Second state.
  * 
  * @param[out] fluxes    Computed numerical fluxes.
  */
-template<FluidModelOption TModel, NumericalFluxOption TFlux, int TDim, 
-         bool TStab>
+template<FluidOption TModel, NumericalFluxOption TFlux, int TDim, bool TStab>
 MFEM_HOST_DEVICE inline
 void ComputeNumericalFluxes(const State<TModel,TDim> &state1, 
                             const State<TModel,TDim> &state2,
@@ -91,7 +91,7 @@ void ComputeNumericalFluxes(const State<TModel,TDim> &state1,
       ComputeInviscidFluxes<TModel,TDim>(state1, F_1);
       ComputeInviscidFluxes<TModel,TDim>(state2, F_2);
 
-      if constexpr (TModel == FluidModelOption::AirCPG)
+      if constexpr (TModel == FluidOption::AirCPG)
       {
          for (int di = 0; di < TDim; di++)
          {

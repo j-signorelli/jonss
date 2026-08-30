@@ -9,7 +9,7 @@ namespace jonss
 {
 
 /// Fluid modeling options.
-enum class FluidModelOption : std::uint8_t
+enum class FluidOption : std::uint8_t
 {
    /// Standard, CPG air.
    AirCPG,

@@ -9,23 +9,15 @@ namespace jonss
 /**
  * @brief Struct to hold model-specific conservative variables.
  * 
- * @details This should be explicitly specialized for each 
- * \ref FluidModelOption.
+ * @details Default template contains the standard conserved variables. 
+ * This may be explicitly specialized to contain more for a specific 
+ * \ref FluidOption, such as for species transport.
  * 
  * @tparam TModel    Fluid model.
  * @tparam TDim      Spatial dimension.
  */
-template<FluidModelOption TModel, int TDim>
+template<FluidOption TModel, int TDim>
 struct State
-{
-   MFEM_HOST_DEVICE State() = delete;
-};
-
-/**
- * @brief State specialization for FluidModelOption::AirCPG.
- */
-template<int TDim>
-struct State<FluidModelOption::AirCPG, TDim>
 {
    /// Density.
    mfem::real_t rho;
