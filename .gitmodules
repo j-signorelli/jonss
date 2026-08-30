@@ -1,3 +1,6 @@
 [submodule "docs/doxygen-awesome-css"]
 	path = docs/doxygen-awesome-css
 	url = git@github.com:jothepro/doxygen-awesome-css.git
+[submodule "tests/Catch2"]
+	path = tests/Catch2
+	url = git@github.com:catchorg/Catch2.git

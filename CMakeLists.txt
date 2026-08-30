@@ -32,9 +32,9 @@ target_sources(jonss
 
 add_subdirectory(apps)
 
-# if (JONSS_BUILD_TESTS)
-#    add_subdirectory(tests)
-# endif()
+if (JONSS_BUILD_TESTS)
+   add_subdirectory(tests)
+endif()
 
 # Install jonss
 include(GNUInstallDirs)
