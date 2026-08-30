@@ -9,13 +9,14 @@ using namespace Catch::Matchers;
 
 TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
                         ((FluidOption TModel), TModel),
-                        FluidOption::EulerCPG)
+                        FluidOption::EulerCPG,
+                        FluidOption::NavierStokesCPG)
 {
    using enum FluidOption;
    if constexpr (TModel == EulerCPG)
    {
       // Initialize constants
-      FluidConstants<EulerCPG> constants(1.4);
+      const FluidConstants<EulerCPG> constants(1.4);
 
       // Initialize test state
       State<EulerCPG,3> state;
