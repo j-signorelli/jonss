@@ -13,9 +13,10 @@ namespace jonss
 {
 
 /**
- * @brief Function for computing the inviscid fluxes.
+ * @brief Function for computing the exact, analytical fluxes.
  * 
  * @tparam TFluid    Fluid model.
+ * @tparam TVisc     Viscosity model.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * 
@@ -24,15 +25,15 @@ namespace jonss
  * 
  * @param[out] fluxes    Computed fluxes.
  */
-template<FluidOption TFluid, int TDim>
+template<FluidOption TFluid, ViscosityOption TVisc, int TDim>
 MFEM_HOST_DEVICE inline
-void ComputeInviscidFluxes(const State<TFluid,TDim> &state,
-                           const Primitives<TFluid,TDim> &prim,
-                           State<TFluid,TDim> (&fluxes)[TDim]) 
+void ComputeExactFluxes(const State<TFluid,TDim> &state,
+                        const Primitives<TFluid,TVisc,TDim> &prim,
+                        State<TFluid,TDim> (&fluxes)[TDim]) 
 {
    using enum FluidOption;
 
-   if constexpr (TFluid == EulerCPG)
+   if constexpr (TFluid == CPG)
    {
       // See "I do like CFD" for details.
 
@@ -76,23 +77,23 @@ void ComputeInviscidFluxes(const State<TFluid,TDim> &state,
  */
 template<FluidOption TFluid, NumericalFluxOption TFlux, int TDim, bool TStab>
 MFEM_HOST_DEVICE inline
-void ComputeNumericalFluxes(const State<TFluid,TDim> &state1, 
+void ComputeNumericalFluxes(const State<TFluid,TDim> &state1,
                             const State<TFluid,TDim> &state2,
                             State<TFluid,TDim> (&fluxes)[TDim])
 {
    using enum NumericalFluxOption;
-
+   using enum FluidOption;
+   
    if constexpr (TFlux == LocalLaxFriedrichs)
    { 
       State<TFluid,TDim> F_1[TDim];
       State<TFluid,TDim> F_2[TDim];
 
       //  TODO: Will need to think about viscous soon. Hurray.
-      ComputeInviscidFluxes<TFluid,TDim>(state1, F_1);
-      ComputeInviscidFluxes<TFluid,TDim>(state2, F_2);
+      ComputeExactFluxes<TFluid,TDim>(state1, F_1);
+      ComputeExactFluxes<TFluid,TDim>(state2, F_2);
 
-      if constexpr (TFluid == FluidOption::EulerCPG || 
-                    TFluid == FluidOption::NavierStokesCPG)
+      if constexpr (TFluid == CPG)
       {
          for (int di = 0; di < TDim; di++)
          {

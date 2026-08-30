@@ -33,7 +33,7 @@ protected:
    //       This includes stuff like maybe gamma or bulk visc fac, etc.
    // We might do like a ModelConstants and a FluxConstants struct of sorts, which would go into
    // constant memory.
-   //const FluidModelOption &fluid_model_;
+   //const FluidOption &fluid_model_;
    //const NumericalFluxOption &volume_flux_;
 
 public:

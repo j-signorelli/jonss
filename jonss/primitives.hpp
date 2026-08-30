@@ -13,25 +13,26 @@ namespace jonss
  * 
  * @details For variables, dependent on the state, that are to be computed 
  * once to avoid expensive re-computations on-the-fly and support storage 
- * in smem.  This should be explicitly specialized for each 
- * \ref FluidOption.
+ * in smem.  This should be specialized for every valid
+ * \ref FluidOption and \ref ViscosityOption combination.
  * 
  * @tparam TFluid    Fluid model.
  * @tparam TDim      Spatial dimension.
  */
-template<FluidOption TFluid, int TDim>
+template<FluidOption TFluid, ViscosityOption TVisc, int TDim>
 struct Primitives
 {
    MFEM_HOST_DEVICE Primitives() = delete;
 };
 
 /**
- * @brief Primitives specialization for FluidOption::AirCPG.
+ * @brief Primitives specialization for
+ * ( \ref FluidOption::CPG, \ref ViscosityOption::Inviscid ).
  * 
  * @tparam TDim      Spatial dimension.
  */
 template<int TDim>
-struct Primitives<FluidOption::EulerCPG, TDim>
+struct Primitives<FluidOption::CPG, ViscosityOption::Inviscid, TDim>
 {
    /// Velocity.
    mfem::real_t vel[TDim];
@@ -50,6 +51,7 @@ struct Primitives<FluidOption::EulerCPG, TDim>
  * @brief Function for initializing a Primitives struct.
  * 
  * @tparam TFluid    Fluid model.
+ * @tparam TVisc     Viscosity model.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * 
@@ -57,15 +59,15 @@ struct Primitives<FluidOption::EulerCPG, TDim>
  * @param[in] state       State struct.
  * @param[out] prim       Primitives struct.
  */
-template<FluidOption TFluid, int TDim>
+template<FluidOption TFluid, ViscosityOption TVisc, int TDim>
 MFEM_HOST_DEVICE inline
-void ComputePrimitives(const FluidConstants<TFluid> &constants,
+void ComputePrimitives(const FluidConstants<TFluid,TVisc> &constants,
                        const State<TFluid,TDim> &state,
-                       Primitives<TFluid,TDim> &prim)
+                       Primitives<TFluid,TVisc,TDim> &prim)
 {
    using enum FluidOption;
 
-   if constexpr (TFluid == EulerCPG)
+   if constexpr (TFluid == CPG)
    {
       // See "I do like CFD" for details.
 

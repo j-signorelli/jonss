@@ -9,58 +9,88 @@ namespace jonss
 {
 
 /**
- * @brief Constants associated with a particular FluidOption.
+ * @brief Constants associated with a particular ViscosityOption.
  * 
  * @details This should be explicitly specialized for every
- * \ref FluidOption.
+ * \ref ViscosityOption.
  * 
  * @tparam TFluid    Fluid model.
  */
-template<FluidOption TFluid>
+template<ViscosityOption TVisc>
+struct ViscosityConstants
+{
+   ViscosityConstants() = delete;
+};
+
+template<>
+struct ViscosityConstants<ViscosityOption::Sutherland>
+{
+   /// Reference temperature
+   const mfem::real_t T_ref;
+
+   /// Viscosity at \ref T_ref.
+   const mfem::real_t mu_ref;
+
+   /// Sutherland temperature.
+   const mfem::real_t S;
+};
+
+/**
+ * @brief Constants associated with a particular FluidOption and
+ * ViscosityOption
+ * 
+ * @details This should be specialized for every valid
+ * \ref FluidOption and \ref ViscosityOption combination.
+ * 
+ * @tparam TFluid    Fluid model.
+ * @tparam TVisc     Viscosity model.
+ */
+template<FluidOption TFluid, ViscosityOption TVisc>
 struct FluidConstants
 {
    FluidConstants() = delete;
 };
 
 /**
- * @brief FluidConstants explicit specialization for \ref
- * FluidOption::EulerCPG.
+ * @brief FluidConstants explicit specialization for
+ * ( \ref FluidOption::CPG, \ref ViscosityOption::Inviscid ).
  */
 template<>
-struct FluidConstants<FluidOption::EulerCPG>
+struct FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>
 {
    const mfem::real_t gamma;
 
-   FluidConstants<FluidOption::EulerCPG>(const mfem::real_t &gamma_)
+   FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>(
+         const mfem::real_t &gamma_)
    : gamma(gamma_) {}
 };
 
 /**
- * @brief FluidConstants explicit specialization for \ref
- * FluidOption::NavierStokesCPG.
+ * @brief FluidConstants partial specialization for
+ * ( \ref FluidOption::CPG, **viscous**).
  */
-template<>
-struct FluidConstants<FluidOption::NavierStokesCPG> 
-   : public FluidConstants<FluidOption::EulerCPG>
+template<ViscosityOption TVisc>
+struct FluidConstants<FluidOption::CPG, TVisc> 
+   : public FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>
 {
    /// Prandtl number.
    const mfem::real_t Pr;
 
    /// Viscosity model.
-   const ViscosityOption visc_model;
+   const ViscosityConstants<TVisc> visc_constants;
 
    /// Bulk viscosity factor.
    const mfem::real_t bulk_visc_fac;
 
 
-   FluidConstants<FluidOption::NavierStokesCPG>(
+   FluidConstants<FluidOption::CPG,TVisc>(
          const mfem::real_t &gamma_, 
          const mfem::real_t &Pr_, 
-         const ViscosityOption &visc_model_, 
+         const ViscosityConstants<TVisc> &visc_constants_, 
          const mfem::real_t &bulk_visc_fac_)
-   : FluidConstants<FluidOption::EulerCPG>(gamma_),
+   : FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>(gamma_),
      Pr(Pr_),
-     visc_model(visc_model_),
+     visc_constants(visc_constants_),
      bulk_visc_fac(bulk_visc_fac_) {}
 };
 

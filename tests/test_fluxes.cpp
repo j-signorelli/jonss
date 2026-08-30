@@ -5,22 +5,32 @@
 
 using namespace jonss;
 
+using enum FluidOption;
+using enum ViscosityOption;
+
 TEMPLATE_TEST_CASE_SIG("Compute inviscid fluxes" ,"[Fluxes]",
-                        ((FluidOption TFluid), TFluid),
-                        FluidOption::EulerCPG,
-                        FluidOption::NavierStokesCPG)
+                        ((FluidOption TFluid, ViscosityOption TVisc), TFluid, TVisc),
+                        (CPG, Inviscid),
+                        (CPG, Sutherland))
 {
    using enum FluidOption;
-   if constexpr (TFluid == EulerCPG)
+   if constexpr (TFluid == CPG)
    {
-      // TODO: Initialize each and verify.
-      const FluidConstants<EulerCPG> constants(1.4);
-      State<EulerCPG,3> state;
-      Primitives<EulerCPG,3> prim;
-      ComputePrimitives(constants,state,prim);    
-      
-      State<EulerCPG,3> fluxes[3];
-      ComputeInviscidFluxes(state,prim,fluxes);
+      if constexpr (TVisc == Inviscid)
+      {
+         // TODO: Initialize each and verify.
+         const FluidConstants<CPG, Inviscid> constants(1.4);
+         State<CPG,3> state;
+         Primitives<CPG,Inviscid,3> prim;
+         ComputePrimitives(constants,state,prim);    
+         
+         State<CPG,3> fluxes[3];
+         //ComputeInviscidFluxes(state,prim,fluxes);
+      }
+      else
+      {
+         FAIL("Unimplemented test for given ViscosityOption");
+      }
    }
    else
    {

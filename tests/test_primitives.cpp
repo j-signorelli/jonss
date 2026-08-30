@@ -9,58 +9,69 @@
 using namespace jonss;
 using namespace Catch::Matchers;
 
+using enum FluidOption;
+using enum ViscosityOption;
+
 TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
-                        ((FluidOption TFluid), TFluid),
-                        FluidOption::EulerCPG,
-                        FluidOption::NavierStokesCPG)
+                        ((FluidOption TFluid, 
+                          ViscosityOption TVisc),
+                         TFluid, TVisc),
+                        (CPG, Inviscid),
+                        (CPG, Sutherland))
 {
-   using enum FluidOption;
-   if constexpr (TFluid == EulerCPG)
+   if constexpr (TFluid == CPG)
    {
-      // Initialize constants
-      const FluidConstants<EulerCPG> constants(1.4);
-
-      // Initialize test state
-      State<EulerCPG,3> state;
-      state.rho = 0.031762238707;
-      state.rhoV[0] = state.rho*471.82963046368343;
-      state.rhoV[1] = 0.0;
-      state.rhoV[2] = state.rho*817.232892479548;
-      state.rhoE = 0.0; // TODO
-
-      // Compute primitives from test state
-      Primitives<EulerCPG,3> prim;
-      ComputePrimitives(constants,state,prim);
-
-      // Initialize exact primitives
-      Primitives<EulerCPG,3> exact_prim;
-      exact_prim.p = 568.749414924658;
-      exact_prim.vel[0] = 471.82963046368343;
-      exact_prim.vel[1] = 0.0;
-      exact_prim.vel[2] = 817.232892479548;
-      exact_prim.vel_sq = 890492.8007339844;
-      exact_prim.H = 0; // TODO;
-
-      // Check equality
-      constexpr static mfem::real_t kTol = 
-      [&]()
+      if constexpr (TVisc == Inviscid)
       {
-         if constexpr (std::is_same_v<mfem::real_t,double>)
-         {
-            return 1e-12;
-         }
-         else
-         {
-            return 1e-9;
-         }
-      }();
+         // Initialize constants
+         const FluidConstants<CPG,Inviscid> constants(1.4);
 
-      CHECK_THAT(prim.p, WithinRel(exact_prim.p, kTol));
-      CHECK_THAT(prim.vel[0], WithinRel(exact_prim.vel[0], kTol));
-      CHECK_THAT(prim.vel[1], WithinRel(exact_prim.vel[1], kTol));
-      CHECK_THAT(prim.vel[2], WithinRel(exact_prim.vel[2], kTol));
-      CHECK_THAT(prim.vel_sq, WithinRel(exact_prim.vel_sq, kTol));
-      CHECK_THAT(prim.H, WithinRel(exact_prim.H, kTol));
+         // Initialize test state
+         State<CPG,3> state;
+         state.rho = 0.031762238707;
+         state.rhoV[0] = state.rho*471.82963046368343;
+         state.rhoV[1] = 0.0;
+         state.rhoV[2] = state.rho*817.232892479548;
+         state.rhoE = 0.0; // TODO
+
+         // Compute primitives from test state
+         Primitives<CPG,Inviscid,3> prim;
+         ComputePrimitives(constants,state,prim);
+
+         // Initialize exact primitives
+         Primitives<CPG,Inviscid,3> exact_prim;
+         exact_prim.p = 568.749414924658;
+         exact_prim.vel[0] = 471.82963046368343;
+         exact_prim.vel[1] = 0.0;
+         exact_prim.vel[2] = 817.232892479548;
+         exact_prim.vel_sq = 890492.8007339844;
+         exact_prim.H = 0; // TODO;
+
+         // Check equality
+         constexpr static mfem::real_t kTol = 
+         [&]()
+         {
+            if constexpr (std::is_same_v<mfem::real_t,double>)
+            {
+               return 1e-12;
+            }
+            else
+            {
+               return 1e-9;
+            }
+         }();
+
+         CHECK_THAT(prim.p, WithinRel(exact_prim.p, kTol));
+         CHECK_THAT(prim.vel[0], WithinRel(exact_prim.vel[0], kTol));
+         CHECK_THAT(prim.vel[1], WithinRel(exact_prim.vel[1], kTol));
+         CHECK_THAT(prim.vel[2], WithinRel(exact_prim.vel[2], kTol));
+         CHECK_THAT(prim.vel_sq, WithinRel(exact_prim.vel_sq, kTol));
+         CHECK_THAT(prim.H, WithinRel(exact_prim.H, kTol));
+      }
+      else
+      {
+         FAIL("Unimplemented test for given ViscosityOption");
+      }
    }
    else
    {
