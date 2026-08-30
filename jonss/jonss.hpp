@@ -1,3 +1,5 @@
-#ifdef JONSS_JOE_TESTS
-#include "joe_tests/utils.hpp"
-#endif // JONSS_JOE_TESTS
+#include "options.hpp"
+#include "state.hpp"
+#include "primitives.hpp"
+#include "fluxes.hpp"
+#include "integrators.hpp"

@@ -20,20 +20,22 @@ namespace jonss
  * 
  * @details This integrator requires tensor-product elements using a nodal basis,
  * where collocation of solution nodes and quadrature points (Gauss-Lobatto) is 
- * performed. No other \ref mfem::IntegrationRule is supported.
+ * performed. No other `mfem::IntegrationRule` is supported.
  * 
- * For \ref mfem::AssemblyLevel::LEGACY, the legacy, CPU-only implementation using
- * \ref mfem::NonlinearFormIntegrator::AssembleElementVector() is employed.
+ * For `mfem::AssemblyLevel::LEGACY`, the legacy, CPU-only implementation using
+ * `mfem::NonlinearFormIntegrator::AssembleElementVector()` is employed.
  * 
  */
 class SplitFormVolumeFluxIntegrator : public mfem::NonlinearFormIntegrator
 {
 protected:
-   const FluxOption &volume_flux_;
+   // TODO: This will likely accept instead a variant of each options' params/settings.
+   //       This includes stuff like maybe gamma or bulk visc fac, etc.
+   //const FluidModelOption &fluid_model_;
+   //const NumericalFluxOption &volume_flux_;
 
 public:
-   SplitFormVolumeFluxIntegrator(const FluxOption &volume_flux)
-   : volume_flux_(volume_flux) {}
+   SplitFormVolumeFluxIntegrator() {}
 
    void AssembleElementVector(const mfem::FiniteElement &el,
                               mfem::ElementTransformation &trans,

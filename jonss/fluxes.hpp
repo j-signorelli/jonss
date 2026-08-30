@@ -1,7 +1,9 @@
 #ifndef JONSS_FLUXES
 #define JONSS_FLUXES
 
-#include "model.hpp"
+#include "options.hpp"
+#include "state.hpp"
+#include "primitives.hpp"
 
 #include <cstdint>
 
@@ -10,46 +12,44 @@
 namespace jonss
 {
 
-
 /**
  * @brief Function for computing the inviscid fluxes.
  * 
- * @details See "I do like CFD" for details.
- * 
- * @warning Only ModelOption::AirCPG is implemented.
- * 
+ * @tparam TModel    Fluid model.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
- * @tparam TModel    Fluid model.
  * 
- * @param state      State vector.
- * @param prim       Primitives.
- * @param fluxes     Flux vectors.
+ * @param state      State struct.
+ * @param prim       Primitives struct.
+ * 
+ * @return fluxes    Computed fluxes.
  */
-template<int TDim, ModelOption TModel>
+template<FluidModelOption TModel, int TDim>
 MFEM_HOST_DEVICE inline
-void ComputeInviscidFluxes(const mfem::real_t (&state)[kNumEq<TDim,TModel>],
-                           const Primitives<TDim,TModel> &prim,
-                           mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>]) 
+void ComputeInviscidFluxes(const State<TModel,TDim> &state,
+                           const Primitives<TModel,TDim> &prim,
+                           State<TModel,TDim> (&fluxes)[TDim]) 
 {
-   using enum ModelOption;
+   using enum FluidModelOption;
 
    if constexpr (TModel == AirCPG)
    {
+      // See "I do like CFD" for details.
+
       for (int di = 0; di < TDim; di++)
       {
          // Set density fluxes
-         fluxes[di][0] = state[1+di];
+         fluxes[di].rho = state.rhoV[di];
 
          // Set momentum fluxes
          for (int dj = 0; dj < TDim; dj++)
          {
-            fluxes[di][dj+1] = state[1+di]*prim.vel[dj];
+            fluxes[di].rhoV[dj] = state.rhoV[di]*prim.vel[dj];
          }
-         fluxes[di][di+1] += prim.p;
+         fluxes[di].rhoV[di] += prim.p;
 
          // Set energy fluxes
-         fluxes[di][TDim+1] = state[1+di]*prim.H;
+         fluxes[di].rhoE = state.rhoV[di]*prim.H;
       }
    }
    else
@@ -58,64 +58,63 @@ void ComputeInviscidFluxes(const mfem::real_t (&state)[kNumEq<TDim,TModel>],
    }
 }
 
-/// Numerical flux options.
-enum class FluxOption : std::uint8_t
-{
-   LocalLaxFriedrichs,
-   Chandrashekar,
-   Size
-};
-
-
-template<int
-
 /**
  * @brief Compute the numerical fluxes.
  * 
+ * @tparam TModel    Fluid model.
+ * @tparam TFlux     Numerical flux.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
- * @tparam TFlux     Numerical flux.
  * @tparam TStab     If true, include stabilization (for face fluxes).
  *                   If false, do not include stabilization (for volume fluxes).
- * @tparam TModel    Fluid model.
  * 
  * @param state1     First state.
  * @param state2     Second state.
+ * 
  * @return fluxes    Computed numerical fluxes.
  */
-template<int TDim, bool TStab, FluxOption TFlux, ModelOption TModel>
-MFEM_HOST_DEVICE void ComputeNumericalFluxes(
-      const mfem::real_t (&state1)[kNumEq<TDim,TModel>],
-      const mfem::real_t (&state2)[kNumEq<TDim,TModel>],
-      mfem::real_t (&fluxes)[TDim][kNumEq<TDim,TModel>])
+template<FluidModelOption TModel, NumericalFluxOption TFlux, int TDim, 
+         bool TStab>
+MFEM_HOST_DEVICE inline void ComputeNumericalFluxes(
+      const State<TModel,TDim> &state1,
+      const State<TModel,TDim> &state2,
+      State<TModel,TDim> (&fluxes)[TDim])
 {
-   using enum FluxOption;
+   using enum NumericalFluxOption;
 
    if constexpr (TFlux == LocalLaxFriedrichs)
    { 
-      mfem::real_t F_1[TDim][kNumEq<TDim,TModel>];
-      mfem::real_t F_2[TDim][kNumEq<TDim,TModel>];
+      State<TModel,TDim> F_1[TDim];
+      State<TModel,TDim> F_2[TDim];
 
       //  TODO: Will need to think about viscous soon. Hurray.
-      ComputeInviscidFluxes<TDim,TModel>(state1, F_1);
-      ComputeInviscidFluxes<TDim,TModel>(state2, F_2);
+      ComputeInviscidFluxes<TModel,TDim>(state1, F_1);
+      ComputeInviscidFluxes<TModel,TDim>(state2, F_2);
 
-      for (int d = 0; d < TDim; d++)
+      if constexpr (TModel == FluidModelOption::AirCPG)
       {
-         for (int c = 0; c < kNumEq<TDim,TModel>; c++)
+         for (int di = 0; di < TDim; di++)
          {
-            fluxes[d][c] = 0.5*(F_1[d][c] + F_2[d][c]);
+            fluxes[di].rho = 0.5*(F_1[di].rho + F_2[di].rho);
+            for (int dj = 0; dj < TDim; dj++)
+            {
+               fluxes[di].rhoV[dj] = 0.5*(F_1[di].rhoV[dj] + F_2[di].rhoV[dj]);
+            }
+            fluxes[di].rhoE = 0.5*(F_1[di].rhoE + F_2[di].rhoE);
+
             if constexpr (TStab)
             {
-               // Compute lambda_max on-the-fly
-               mfem::real_t lambda_max;
-               // TODO: Figure out exactly what these should be...
-               // I think they are just the eigenvalues in the I do like CFD.
-               // But Theseus confusing me.
-               fluxes[d][c] -= 0.5*lambda_max*(state2[c] - state1[c]);
+               // mfem::real_t lambda_max;
+               // TODO
+               // fluxes[d][c] -= 0.5*lambda_max*(state2[c] - state1[c]);
             }
          }
       }
+      else
+      {
+         static_assert(TDim != TDim, "Unimplemented numerical flux.");
+      }
+
    }
    else if constexpr (TFlux == Chandrashekar)
    {

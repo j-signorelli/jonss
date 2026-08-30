@@ -17,6 +17,9 @@ set(JONSS_SOURCES
       integrators.cpp)
 
 set(JONSS_HEADERS
+      options.hpp
+      state.hpp
+      primitives.hpp
       fluxes.hpp
       integrators.hpp
       jonss.hpp)
