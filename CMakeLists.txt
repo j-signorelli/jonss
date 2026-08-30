@@ -2,11 +2,18 @@ cmake_minimum_required(VERSION 3.15)
 
 project(jonss LANGUAGES CXX CUDA VERSION 2.0.0)
 
+option(JONSS_BUILD_DOCS 
+   "Build documentation w/ Doxygen. In build directory: `make docs`." OFF)
+
 option(JONSS_BUILD_JOE_TESTS
    "Build the joe_tests. Requires Jabber." ON)
 
 option(JONSS_BUILD_TESTS
    "Build the unit tests." ON)
+
+if (JONSS_BUILD_DOCS)
+   add_subdirectory(docs)
+endif()
 
 # Get MFEM
 find_package(MFEM 4.9 REQUIRED CONFIG) 
