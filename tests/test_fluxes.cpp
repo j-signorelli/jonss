@@ -6,10 +6,10 @@
 using namespace jonss;
 
 TEMPLATE_TEST_CASE_SIG("Compute inviscid fluxes" ,"[Fluxes]",
-                        ((FluidModelOption TModel), TModel),
-                        FluidModelOption::AirCPG)
+                        ((FluidOption TModel), TModel),
+                        FluidOption::AirCPG)
 {
-   using enum FluidModelOption;
+   using enum FluidOption;
    if constexpr (TModel == AirCPG)
    {
       // TODO: Initialize each and verify.
@@ -22,6 +22,6 @@ TEMPLATE_TEST_CASE_SIG("Compute inviscid fluxes" ,"[Fluxes]",
    }
    else
    {
-      FAIL("Unimplemented test for given FluidModelOption");
+      FAIL("Unimplemented test for given FluidOption");
    }
 }

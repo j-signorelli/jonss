@@ -8,10 +8,10 @@ using namespace jonss;
 using namespace Catch::Matchers;
 
 TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
-                        ((FluidModelOption TModel), TModel),
-                        FluidModelOption::AirCPG)
+                        ((FluidOption TModel), TModel),
+                        FluidOption::AirCPG)
 {
-   using enum FluidModelOption;
+   using enum FluidOption;
    if constexpr (TModel == AirCPG)
    {
       // Initialize test state
@@ -46,6 +46,6 @@ TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
    }
    else
    {
-      FAIL("Unimplemented test for given FluidModelOption");
+      FAIL("Unimplemented test for given FluidOption");
    }
 }
