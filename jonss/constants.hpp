@@ -22,6 +22,7 @@ struct ViscosityConstants
    ViscosityConstants() = delete;
 };
 
+/// ViscosityConstants explicit specialization for Sutherland's Law.
 template<>
 struct ViscosityConstants<ViscosityOption::Sutherland>
 {
@@ -36,8 +37,8 @@ struct ViscosityConstants<ViscosityOption::Sutherland>
 };
 
 /**
- * @brief Constants associated with a particular FluidOption and
- * ViscosityOption
+ * @brief Constants associated with a particular \ref FluidOption and
+ * \ref ViscosityOption.
  * 
  * @details This should be specialized for every valid
  * \ref FluidOption and \ref ViscosityOption combination.
@@ -52,8 +53,8 @@ struct FluidConstants
 };
 
 /**
- * @brief FluidConstants explicit specialization for
- * ( \ref FluidOption::CPG, \ref ViscosityOption::Inviscid ).
+ * @brief FluidConstants explicit specialization for an inviscid, 
+ * calorically-perfect gas.
  */
 template<>
 struct FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>
@@ -66,8 +67,9 @@ struct FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>
 };
 
 /**
- * @brief FluidConstants partial specialization for
- * ( \ref FluidOption::CPG, **viscous**).
+ * @brief FluidConstants partial specialization for a viscous, 
+ * calorically-perfect gas.
+ * 
  */
 template<ViscosityOption TVisc>
 struct FluidConstants<FluidOption::CPG, TVisc> 

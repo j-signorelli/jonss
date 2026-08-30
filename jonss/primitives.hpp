@@ -26,8 +26,7 @@ struct Primitives
 };
 
 /**
- * @brief Primitives specialization for
- * ( \ref FluidOption::CPG, \ref ViscosityOption::Inviscid ).
+ * @brief Primitives specialization for an inviscid, calorically-perfect gas.
  * 
  * @tparam TDim      Spatial dimension.
  */
