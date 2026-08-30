@@ -40,7 +40,7 @@ struct TestContext
 
    /// Planar wave speed. true = slow, false = fast.
    bool slow = true;
-   
+
    /// Enable/disable visualization w/ GLVis.
    bool visualization = true;
 
@@ -49,7 +49,7 @@ struct TestContext
 
 } ctx;
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
    // Initialize MPI and HYPRE.
    Mpi::Init(argc, argv);
@@ -58,9 +58,9 @@ int main(int argc, char* argv[])
 
    // Parse command line arguments
    OptionsParser args(argc, argv);
-   args.AddOption(&ctx.u_infty, "-u", "--u-infty", 
+   args.AddOption(&ctx.u_infty, "-u", "--u-infty",
                   "Freestream velocity vector.");
-   args.AddOption(&ctx.rho_infty, "-rho", "--rho-infty", 
+   args.AddOption(&ctx.rho_infty, "-rho", "--rho-infty",
                   "Freestream density.");
    args.AddOption(&ctx.p_infty, "-p", "--p-infty",
                   "Freestream pressure.");
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
                   "Number of waves to include in test.");
    args.AddOption(&ctx.num_elems_per_wave, "-ne", "--num-elems",
                   "Number of elements **per wave** in x.");
-   args.AddOption(&ctx.amp, "-a", "--amplitude", 
+   args.AddOption(&ctx.amp, "-a", "--amplitude",
                   "Acoustic wave amplitude.");
    args.AddOption(&ctx.freq, "-f", "--freq",
                   "Acoustic wave frequency.");
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
                   "-no-vis", "--no-visualization",
                   "Enable or disable GLVis visualization.");
    args.AddOption(&ctx.order, "-o", "--order",
-                  "Order (degree) of the finite elements.");           
+                  "Order (degree) of the finite elements.");
    args.Parse();
    if (!args.Good())
    {
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
    {
       args.PrintOptions(std::cout);
    }
-   
+
    jabber::Wave wave;
    wave.amplitude = ctx.amp;
    wave.frequency = ctx.freq;
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
    const double k = jabber::ComputeWavenumber(u_infty_vector, c_infty, wave);
 
    // Create the mesh
-   Mesh mesh = joe_tests::Create2DWaveDomain(k, ctx.num_waves, 
+   Mesh mesh = joe_tests::Create2DWaveDomain(k, ctx.num_waves,
                                              ctx.num_elems_per_wave);
    // Visualize the mesh
    if (ctx.visualization)

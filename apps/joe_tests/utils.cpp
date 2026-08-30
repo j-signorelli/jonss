@@ -49,12 +49,12 @@ Mesh Create2DWaveDomain(const double k,
       for (int i = 0; i < xs.size() - 1; i++)
       {
          mesh.AddQuad(i   + j*xs.size(),
-                      i+1 + j*xs.size(), 
-                      i+1 + (j+1)*xs.size(), 
+                      i+1 + j*xs.size(),
+                      i+1 + (j+1)*xs.size(),
                       i   + (j+1)*xs.size());
       }
    }
-   
+
    // Set boundary elements
    for (int j = 0; j < ys.size() - 1; j++)
    {
@@ -73,7 +73,7 @@ Mesh Create2DWaveDomain(const double k,
 
       // Top: bdr_attr 4
       mesh.AddBdrSegment(i   + (ys.size() - 1)*xs.size(),
-                         i+1 + (ys.size() - 1)*xs.size(), 
+                         i+1 + (ys.size() - 1)*xs.size(),
                          4);
    }
 
@@ -85,8 +85,8 @@ Mesh Create2DWaveDomain(const double k,
    Vector x_translations({xs.back(), 0.0});
    Vector y_translations({0.0, ys.back()});
    std::vector<Vector> translations({x_translations, y_translations});
-   Mesh periodic_mesh = Mesh::MakePeriodic(mesh, 
-                              mesh.CreatePeriodicVertexMapping(translations));
+   Mesh periodic_mesh =
+      Mesh::MakePeriodic(mesh,mesh.CreatePeriodicVertexMapping(translations));
 
    return periodic_mesh;
 }

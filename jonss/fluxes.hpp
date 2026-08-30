@@ -14,22 +14,22 @@ namespace jonss
 
 /**
  * @brief Function for computing the exact, analytical fluxes.
- * 
+ *
  * @tparam TFluid    Fluid model.
  * @tparam TVisc     Viscosity model.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
- * 
+ *
  * @param[in] state      State struct.
  * @param[in] prim       Primitives struct.
- * 
+ *
  * @param[out] fluxes    Computed fluxes.
  */
 template<FluidOption TFluid, ViscosityOption TVisc, int TDim>
 MFEM_HOST_DEVICE inline
 void ComputeExactFluxes(const State<TFluid,TDim> &state,
                         const Primitives<TFluid,TVisc,TDim> &prim,
-                        State<TFluid,TDim> (&fluxes)[TDim]) 
+                        State<TFluid,TDim> (&fluxes)[TDim])
 {
    using enum FluidOption;
 
@@ -61,7 +61,7 @@ void ComputeExactFluxes(const State<TFluid,TDim> &state,
 
 /**
  * @brief Compute the numerical fluxes.
- * 
+ *
  * @tparam TFluid    Fluid model.
  * @tparam TFlux     Numerical flux.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
@@ -69,10 +69,10 @@ void ComputeExactFluxes(const State<TFluid,TDim> &state,
  * @tparam TStab     If true, include stabilization (for face fluxes).
  *                   If false, do not include stabilization (for volume
  *                   fluxes).
- * 
+ *
  * @param[in] state1     First state.
  * @param[in] state2     Second state.
- * 
+ *
  * @param[out] fluxes    Computed numerical fluxes.
  */
 template<FluidOption TFluid, NumericalFluxOption TFlux, int TDim, bool TStab>
@@ -83,9 +83,9 @@ void ComputeNumericalFluxes(const State<TFluid,TDim> &state1,
 {
    using enum NumericalFluxOption;
    using enum FluidOption;
-   
+
    if constexpr (TFlux == LocalLaxFriedrichs)
-   { 
+   {
       State<TFluid,TDim> F_1[TDim];
       State<TFluid,TDim> F_2[TDim];
 

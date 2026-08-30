@@ -10,11 +10,11 @@ namespace jonss
 
 /**
  * @brief Struct to hold model-specific conservative variables.
- * 
- * @details Default template contains the standard conserved variables. 
- * This may be explicitly specialized to contain more for a specific 
+ *
+ * @details Default template contains the standard conserved variables.
+ * This may be explicitly specialized to contain more for a specific
  * \ref FluidOption, such as for species transport.
- * 
+ *
  * @tparam TFluid    Fluid model.
  * @tparam TDim      Spatial dimension.
  */
@@ -26,7 +26,7 @@ struct State
 
    /// Momentum.
    mfem::real_t rhoV[TDim];
-   
+
    /// Energy.
    mfem::real_t rhoE;
 };

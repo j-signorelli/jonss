@@ -10,12 +10,12 @@ namespace jonss
 /**
  * @brief Struct to hold relevant, model-specific primitive and auxiliary
  * variables.
- * 
- * @details For variables, dependent on the state, that are to be computed 
- * once to avoid expensive re-computations on-the-fly and support storage 
+ *
+ * @details For variables, dependent on the state, that are to be computed
+ * once to avoid expensive re-computations on-the-fly and support storage
  * in smem.  This should be specialized for every valid
  * \ref FluidOption and \ref ViscosityOption combination.
- * 
+ *
  * @tparam TFluid    Fluid model.
  * @tparam TDim      Spatial dimension.
  */
@@ -27,7 +27,7 @@ struct Primitives
 
 /**
  * @brief Primitives specialization for an inviscid, calorically-perfect gas.
- * 
+ *
  * @tparam TDim      Spatial dimension.
  */
 template<int TDim>
@@ -48,12 +48,12 @@ struct Primitives<FluidOption::CPG, ViscosityOption::Inviscid, TDim>
 
 /**
  * @brief Function for initializing a Primitives struct.
- * 
+ *
  * @tparam TFluid    Fluid model.
  * @tparam TVisc     Viscosity model.
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
- * 
+ *
  * @param[in] constants   Constants struct.
  * @param[in] state       State struct.
  * @param[out] prim       Primitives struct.

@@ -11,30 +11,24 @@ namespace jonss
 /**
  * @brief Integrator for the volume term in split-form DGSEM @cite gassner2016,
  * given by
- * 
+ *
  * \f[
  * \left(\displaystyle\int_E\phi_{ijk}\dfrac{\partial \phi_{\lambda\mu\nu}}
  *       {\partial\xi^l}d\tilde{V}\right)\tilde{F}^l_{\lambda\mu\nu}.
- * 
+ *
  * \f]
- * 
- * @details This integrator requires tensor-product elements using a nodal basis,
- * where collocation of solution nodes and quadrature points (Gauss-Lobatto) is 
- * performed. No other `mfem::IntegrationRule` is supported.
- * 
+ *
+ * @details This integrator requires tensor-product elements using a nodal
+ * basis, where collocation of solution nodes and quadrature points
+ * (Gauss-Lobatto) is performed. No other `mfem::IntegrationRule` is supported.
+ *
  * For `mfem::AssemblyLevel::LEGACY`, the legacy, CPU-only implementation using
  * `mfem::NonlinearFormIntegrator::AssembleElementVector()` is employed.
- * 
+ *
  */
 class SplitFormVolumeFluxIntegrator : public mfem::NonlinearFormIntegrator
 {
 protected:
-   // TODO: This will likely accept instead a variant of each options' params/settings.
-   //       This includes stuff like maybe gamma or bulk visc fac, etc.
-   // We might do like a ModelConstants and a FluxConstants struct of sorts, which would go into
-   // constant memory.
-   //const FluidOption &fluid_model_;
-   //const NumericalFluxOption &volume_flux_;
 
 public:
    SplitFormVolumeFluxIntegrator() {}
@@ -42,18 +36,18 @@ public:
    void AssembleElementVector(const mfem::FiniteElement &el,
                               mfem::ElementTransformation &trans,
                               const mfem::Vector &elfun,
-                              mfem::Vector &elvect) override; 
-   
-   // const mfem::IntegrationRule* GetDefaultIntegrationRule(
-   //                            const mfem::FiniteElement &trial_fe,
-   //                            const mfem::FiniteElement &test_fe,
-   //                            const mfem::ElementTransformation &trans) const
-   // {
-   //    // TODO.
-   //    return &(IntRules.Get(test_fe.GetGeomType(), test_fe.GetOrder()));
-   // }
-   
-   
+                              mfem::Vector &elvect) override;
+
+// const mfem::IntegrationRule* GetDefaultIntegrationRule(
+//                            const mfem::FiniteElement &trial_fe,
+//                            const mfem::FiniteElement &test_fe,
+//                            const mfem::ElementTransformation &trans) const
+// {
+//    // TODO.
+//    return &(IntRules.Get(test_fe.GetGeomType(), test_fe.GetOrder()));
+// }
+
+
 };
 
 } // namespace jonss

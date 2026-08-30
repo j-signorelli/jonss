@@ -10,10 +10,10 @@ namespace jonss
 
 /**
  * @brief Constants associated with a particular ViscosityOption.
- * 
+ *
  * @details This should be explicitly specialized for every
  * \ref ViscosityOption.
- * 
+ *
  * @tparam TFluid    Fluid model.
  */
 template<ViscosityOption TVisc>
@@ -39,10 +39,10 @@ struct ViscosityConstants<ViscosityOption::Sutherland>
 /**
  * @brief Constants associated with a particular \ref FluidOption and
  * \ref ViscosityOption.
- * 
+ *
  * @details This should be specialized for every valid
  * \ref FluidOption and \ref ViscosityOption combination.
- * 
+ *
  * @tparam TFluid    Fluid model.
  * @tparam TVisc     Viscosity model.
  */
@@ -53,7 +53,7 @@ struct FluidConstants
 };
 
 /**
- * @brief FluidConstants explicit specialization for an inviscid, 
+ * @brief FluidConstants explicit specialization for an inviscid,
  * calorically-perfect gas.
  */
 template<>
@@ -62,17 +62,17 @@ struct FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>
    const mfem::real_t gamma;
 
    FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>(
-         const mfem::real_t &gamma_)
-   : gamma(gamma_) {}
+      const mfem::real_t &gamma_)
+      : gamma(gamma_) {}
 };
 
 /**
- * @brief FluidConstants partial specialization for a viscous, 
+ * @brief FluidConstants partial specialization for a viscous,
  * calorically-perfect gas.
- * 
+ *
  */
 template<ViscosityOption TVisc>
-struct FluidConstants<FluidOption::CPG, TVisc> 
+struct FluidConstants<FluidOption::CPG, TVisc>
    : public FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>
 {
    /// Prandtl number.
@@ -86,14 +86,14 @@ struct FluidConstants<FluidOption::CPG, TVisc>
 
 
    FluidConstants<FluidOption::CPG,TVisc>(
-         const mfem::real_t &gamma_, 
-         const mfem::real_t &Pr_, 
-         const ViscosityConstants<TVisc> &visc_constants_, 
-         const mfem::real_t &bulk_visc_fac_)
-   : FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>(gamma_),
-     Pr(Pr_),
-     visc_constants(visc_constants_),
-     bulk_visc_fac(bulk_visc_fac_) {}
+      const mfem::real_t &gamma_,
+      const mfem::real_t &Pr_,
+      const ViscosityConstants<TVisc> &visc_constants_,
+      const mfem::real_t &bulk_visc_fac_)
+      : FluidConstants<FluidOption::CPG, ViscosityOption::Inviscid>(gamma_),
+        Pr(Pr_),
+        visc_constants(visc_constants_),
+        bulk_visc_fac(bulk_visc_fac_) {}
 };
 
 } // namespace jonss
