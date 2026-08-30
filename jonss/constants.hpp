@@ -14,7 +14,7 @@ namespace jonss
  * @details This should be explicitly specialized for every
  * \ref FluidOption.
  * 
- * @tparam TFluid 
+ * @tparam TFluid    Fluid model.
  */
 template<FluidOption TFluid>
 struct FluidConstants

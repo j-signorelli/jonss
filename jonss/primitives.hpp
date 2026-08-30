@@ -53,8 +53,9 @@ struct Primitives<FluidOption::EulerCPG, TDim>
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * 
- * @param[in] state     State struct.
- * @param[out] prim     Primitives struct.
+ * @param[in] constants   Constants struct.
+ * @param[in] state       State struct.
+ * @param[out] prim       Primitives struct.
  */
 template<FluidOption TFluid, int TDim>
 MFEM_HOST_DEVICE inline
