@@ -19,10 +19,10 @@ namespace jonss
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * 
- * @param state      State struct.
- * @param prim       Primitives struct.
+ * @param[in] state      State struct.
+ * @param[in] prim       Primitives struct.
  * 
- * @return fluxes    Computed fluxes.
+ * @param[out] fluxes    Computed fluxes.
  */
 template<FluidModelOption TModel, int TDim>
 MFEM_HOST_DEVICE inline
@@ -68,17 +68,17 @@ void ComputeInviscidFluxes(const State<TModel,TDim> &state,
  * @tparam TStab     If true, include stabilization (for face fluxes).
  *                   If false, do not include stabilization (for volume fluxes).
  * 
- * @param state1     First state.
- * @param state2     Second state.
+ * @param[in] state1     First state.
+ * @param[in] state2     Second state.
  * 
- * @return fluxes    Computed numerical fluxes.
+ * @param[out] fluxes    Computed numerical fluxes.
  */
 template<FluidModelOption TModel, NumericalFluxOption TFlux, int TDim, 
          bool TStab>
-MFEM_HOST_DEVICE inline void ComputeNumericalFluxes(
-      const State<TModel,TDim> &state1,
-      const State<TModel,TDim> &state2,
-      State<TModel,TDim> (&fluxes)[TDim])
+MFEM_HOST_DEVICE inline
+void ComputeNumericalFluxes(const State<TModel,TDim> &state1, 
+                            const State<TModel,TDim> &state2,
+                            State<TModel,TDim> (&fluxes)[TDim])
 {
    using enum NumericalFluxOption;
 

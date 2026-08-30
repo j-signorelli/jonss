@@ -56,8 +56,8 @@ struct Primitives<FluidModelOption::AirCPG, TDim>
  * @tparam TDim      Spatial dimension. Templated to allow compiler to unroll
  *                   loops.
  * 
- * @param state      State struct.
- * @return prim      Primitives struct.
+ * @param[in] state     State struct.
+ * @param[out] prim     Primitives struct.
  */
 template<FluidModelOption TModel, int TDim>
 MFEM_HOST_DEVICE inline
@@ -69,7 +69,7 @@ void ComputePrimitives(const State<TModel,TDim> &state,
    if constexpr (TModel == AirCPG)
    {
       // See "I do like CFD" for details.
-      
+
       prim.vel_sq = 0.0;
       for (int d = 0; d < TDim; d++)
       {
