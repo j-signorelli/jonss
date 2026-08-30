@@ -4,6 +4,8 @@
 
 #include <jonss/jonss.hpp>
 
+#include <type_traits>
+
 using namespace jonss;
 using namespace Catch::Matchers;
 
@@ -40,7 +42,19 @@ TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
       exact_prim.H = 0; // TODO;
 
       // Check equality
-      constexpr static double kTol = 1e-12;
+      constexpr static mfem::real_t kTol = 
+      [&]()
+      {
+         if constexpr (std::is_same_v<mfem::real_t,double>)
+         {
+            return 1e-12;
+         }
+         else
+         {
+            return 1e-9;
+         }
+      }();
+
       CHECK_THAT(prim.p, WithinRel(exact_prim.p, kTol));
       CHECK_THAT(prim.vel[0], WithinRel(exact_prim.vel[0], kTol));
       CHECK_THAT(prim.vel[1], WithinRel(exact_prim.vel[1], kTol));
