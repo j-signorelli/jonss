@@ -56,10 +56,10 @@ struct Primitives<FluidOption::CPG, ViscosityOption::Inviscid, TDim>
  */
 template<ViscosityOption TVisc, int TDim>
 struct Primitives<FluidOption::CPG, TVisc, TDim>
-   : public Primitives<FluidOption::CPG, ViscosityOption::Inviscid,TDim>
+   : public Primitives<FluidOption::CPG, ViscosityOption::Inviscid, TDim>
 {
    /// Viscous stress tensor.
-   mfem::real_t tau[TDim][TDim]
+   mfem::real_t tau[TDim][TDim];
 
    /// Heat flux.
    mfem::real_t q[TDim];

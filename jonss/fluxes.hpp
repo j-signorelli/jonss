@@ -41,7 +41,7 @@ void ComputeExactFluxes(const State<TFluid,TDim> &state,
       {
          // Set inviscid density fluxes
          fluxes[di].rho = state.rhoV[di];
-         
+
          // Set inviscid energy fluxes
          fluxes[di].rhoE = state.rhoV[di]*prim.H;
 
@@ -57,10 +57,10 @@ void ComputeExactFluxes(const State<TFluid,TDim> &state,
                fluxes[di].rhoV[dj] -= prim.tau[dj][di];
 
                // Add viscous shear energy fluxes
-               fluxes[di].rhoE -= prim.tau[di][dj]*prim.vel[dj]
+               fluxes[di].rhoE -= prim.tau[di][dj]*prim.vel[dj];
             }
          }
-         
+
          // Add pressure stress to momentum flux
          fluxes[di].rhoV[di] += prim.p;
 

@@ -35,17 +35,17 @@ struct ViscosityConstants<ViscosityOption::Sutherland>
    /// Sutherland temperature. 110.4 for standard air.
    const mfem::real_t S;
 
-   /// Evaluated, simplified prefactor 
+   /// Evaluated, simplified prefactor.
    const mfem::real_t C1;
 
    ViscosityConstants<ViscosityOption::Sutherland>(
       const mfem::real_t &T_ref_,
       const mfem::real_t &mu_ref_,
       const mfem::real_t &S_)
-   : T_ref(T_ref_),
-     mu_ref(mu_ref_),
-     S(S_),
-     C1(mu_ref*(T_ref+S)/std::pow(T_ref, 2.0/3.0)) {}
+      : T_ref(T_ref_),
+        mu_ref(mu_ref_),
+        S(S_),
+        C1(mu_ref*(T_ref+S)/std::pow(T_ref, 2.0/3.0)) {}
 };
 
 /**
@@ -95,7 +95,7 @@ struct FluidConstants<FluidOption::CPG, TVisc>
    /// Prandtl number. 0.72 for standard air.
    const mfem::real_t Pr;
 
-   /// Bulk viscosity factor. 0.6 for standard air ( @todo cite ). 
+   /// Bulk viscosity factor. 0.6 for standard air ( @todo cite ).
    const mfem::real_t bulk_visc_fac;
 
    /// Viscosity model.
