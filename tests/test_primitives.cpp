@@ -24,7 +24,7 @@ TEMPLATE_TEST_CASE_SIG("Compute primitives" ,"[Primitives]",
       if constexpr (TVisc == Inviscid)
       {
          // Initialize constants
-         const FluidConstants<CPG,Inviscid> constants(1.4);
+         const FluidConstants<CPG,Inviscid> constants(1.4, 287.05);
 
          // Initialize test state
          State<CPG,3> state;

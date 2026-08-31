@@ -19,7 +19,7 @@ TEMPLATE_TEST_CASE_SIG("Compute inviscid fluxes" ,"[Fluxes]",
       if constexpr (TVisc == Inviscid)
       {
          // TODO: Initialize each and verify.
-         const FluidConstants<CPG, Inviscid> constants(1.4);
+         const FluidConstants<CPG, Inviscid> constants(1.4, 287.05);
          State<CPG,3> state;
          Primitives<CPG,Inviscid,3> prim;
          ComputePrimitives(constants,state,prim);    

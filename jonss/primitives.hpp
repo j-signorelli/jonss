@@ -26,7 +26,8 @@ struct Primitives
 };
 
 /**
- * @brief Primitives specialization for an inviscid, calorically-perfect gas.
+ * @brief Primitives explicit specialization for an inviscid,
+ * calorically-perfect gas.
  *
  * @tparam TDim      Spatial dimension.
  */
@@ -44,6 +45,24 @@ struct Primitives<FluidOption::CPG, ViscosityOption::Inviscid, TDim>
 
    /// Specific total enthalpy.
    mfem::real_t H;
+};
+
+/**
+ * @brief Primitives partial specialization for a viscous,
+ * calorically-perfect gas.
+ *
+ * @tparam TDim      Spatial dimension.
+ * @tparam TVisc     Viscosity model.
+ */
+template<ViscosityOption TVisc, int TDim>
+struct Primitives<FluidOption::CPG, TVisc, TDim>
+   : public Primitives<FluidOption::CPG, ViscosityOption::Inviscid,TDim>
+{
+   /// Viscous stress tensor.
+   mfem::real_t tau[TDim][TDim]
+
+   /// Heat flux.
+   mfem::real_t q[TDim];
 };
 
 /**
@@ -65,6 +84,7 @@ void ComputePrimitives(const FluidConstants<TFluid,TVisc> &constants,
                        Primitives<TFluid,TVisc,TDim> &prim)
 {
    using enum FluidOption;
+   using enum ViscosityOption;
 
    if constexpr (TFluid == CPG)
    {
@@ -78,12 +98,19 @@ void ComputePrimitives(const FluidConstants<TFluid,TVisc> &constants,
       }
       prim.p = (constants.gamma-1.0)*(state.rhoE-0.5*state.rho*prim.vel_sq);
       prim.H = (state.rhoE + prim.p)/state.rho;
+
+      if constexpr (TVisc != Inviscid)
+      {
+         // TODO...
+      }
    }
    else
    {
       static_assert(TDim != TDim, "Unimplemented model.");
    }
 }
+
+
 
 } // namespace jonss
 

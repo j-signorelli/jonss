@@ -32,25 +32,43 @@ void ComputeExactFluxes(const State<TFluid,TDim> &state,
                         State<TFluid,TDim> (&fluxes)[TDim])
 {
    using enum FluidOption;
-
+   using enum ViscosityOption;
    if constexpr (TFluid == CPG)
    {
       // See "I do like CFD" for details.
 
       for (int di = 0; di < TDim; di++)
       {
-         // Set density fluxes
+         // Set inviscid density fluxes
          fluxes[di].rho = state.rhoV[di];
+         
+         // Set inviscid energy fluxes
+         fluxes[di].rhoE = state.rhoV[di]*prim.H;
 
          // Set momentum fluxes
          for (int dj = 0; dj < TDim; dj++)
          {
+            // Set inviscid momentum fluxes (minus pressure)
             fluxes[di].rhoV[dj] = state.rhoV[di]*prim.vel[dj];
+
+            if constexpr (TVisc != Inviscid)
+            {
+               // Add viscous stress to momentum fluxes
+               fluxes[di].rhoV[dj] -= prim.tau[dj][di];
+
+               // Add viscous shear energy fluxes
+               fluxes[di].rhoE -= prim.tau[di][dj]*prim.vel[dj]
+            }
          }
+         
+         // Add pressure stress to momentum flux
          fluxes[di].rhoV[di] += prim.p;
 
-         // Set energy fluxes
-         fluxes[di].rhoE = state.rhoV[di]*prim.H;
+         if constexpr(TVisc != Inviscid)
+         {
+            // Add viscous thermal energy fluxes
+            fluxes[di].rhoE += prim.q[di];
+         }
       }
    }
    else
